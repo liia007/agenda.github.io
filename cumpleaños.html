@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fechas Importantes</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #f3e5f5, #e1f5fe);
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1a237e;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .formulario {
+      max-width: 450px;
+      margin: 20px auto;
+      background-color: #ffffffee;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      backdrop-filter: blur(4px);
+    }
+
+    .formulario input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .formulario button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(to right, #3949ab, #1e88e5);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .formulario button:hover {
+      background: linear-gradient(to right, #303f9f, #1976d2);
+    }
+
+    .tarjetas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .tarjeta {
+      background-color: #ffffffee;
+      border: 1px solid #ddd;
+      border-left: 5px solid #3949ab;
+      border-radius: 12px;
+      padding: 20px;
+      width: 240px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    .tarjeta:hover {
+      transform: translateY(-5px);
+    }
+
+    .tarjeta button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #e53935;
+      border: none;
+      color: white;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .tarjeta strong {
+      color: #1a237e;
+      font-size: 1.2rem;
+    }
+
+    .tarjeta span {
+      font-size: 0.95rem;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎉 Cumpleaños</h1>
+
+  <div class="formulario">
+    <input type="text" id="evento" placeholder="Fecha del cumpleañero">
+    <input type="date" id="fecha">
+    <button onclick="agregarEvento()">Agregar fecha </button>
+  </div>
+
+  <div class="tarjetas" id="lista-eventos"></div>
+
+  <script>
+    function cargarEventos() {
+      const datos = JSON.parse(localStorage.getItem("eventos") || "[]");
+      const contenedor = document.getElementById("lista-eventos");
+      contenedor.innerHTML = "";
+      datos.forEach((item, index) => {
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "tarjeta";
+        tarjeta.innerHTML = `
+          <button onclick="eliminarEvento(${index})">×</button>
+          <strong>${item.evento}</strong><br>
+          <span>📌 ${item.fecha}</span><br>
+          <a href="dia.html?fecha=${item.fecha}" style="color: #1e88e5; text-decoration: underline;">Ir al día</a>
+        `;
+        contenedor.appendChild(tarjeta);
+      });
+    }
+
+    function agregarEvento() {
+      const evento = document.getElementById("evento").value.trim();
+      const fecha = document.getElementById("fecha").value;
+      if (!evento || !fecha) return alert("Por favor completa ambos campos.");
+      const datos = JSON.parse(localStorage.getItem("eventos") || "[]");
+      datos.push({ evento, fecha });
+      localStorage.setItem("eventos", JSON.stringify(datos));
+      document.getElementById("evento").value = "";
+      document.getElementById("fecha").value = "";
+      cargarEventos();
+    }
+
+    function eliminarEvento(index) {
+      const datos = JSON.parse(localStorage.getItem("eventos") || "[]");
+      datos.splice(index, 1);
+      localStorage.setItem("eventos", JSON.stringify(datos));
+      cargarEventos();
+    }
+
+    document.addEventListener("DOMContentLoaded", cargarEventos);
+  </script>
+</body>
+</html>

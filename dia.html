@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vista diaria</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <script defer src="js/cargar-dia.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f7fa;
+    }
+
+    .day-header {
+      background-color: #007bff;
+      color: white;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin: 0 auto 20px;
+    }
+
+    .volver-calendario {
+      display: inline-block;
+      margin-bottom: 15px;
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    h3 {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      color: #34495e;
+    }
+
+    .prioridades ul,
+    .cosas-por-hacer ul,
+    .agradezco ul {
+      padding-left: 0;
+    }
+
+    .prioridades li,
+    .cosas-por-hacer li,
+    .agradezco li {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      border: none;
+      border-bottom: 1px solid #ccc;
+      background: transparent;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 8px;
+      resize: vertical;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .notas textarea {
+      height: 200px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 6px 12px;
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input[type="file"] {
+      margin: 10px 0;
+    }
+
+    input[type="submit"] {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+
+    #preview img {
+      margin: 10px;
+      width: 100px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <a href="calendario.html" class="volver-calendario">← Calendario</a>
+
+  <div class="day-header">
+    <h1><span id="numero-dia">--</span></h1>
+    <p id="nombre-dia">Día</p>
+  </div>
+
+  <div class="vista-dia">
+    <div class="columna-centro">
+      <div class="urgente">
+        <label for="urgente"><strong>URGENTE</strong></label>
+        <textarea id="urgente" rows="2" placeholder="Escribe aquí..."></textarea>
+      </div>
+
+      <div class="prioridades">
+        <h3>PRIORIDADES</h3>
+        <ul>
+          <li><input type="checkbox"> <input type="text"></li>
+          <li><input type="checkbox"> <input type="text"></li>
+          <li><input type="checkbox"> <input type="text"></li>
+          <li><input type="checkbox"> <input type="text"></li>
+          <li><input type="checkbox"> <input type="text"></li>
+        </ul>
+      </div>
+
+      <div class="cosas-por-hacer">
+        <h3>COSAS POR HACER</h3>
+        <ul>
+          <li><input type="checkbox"> <input type="text"></li>
+          <li><input type="checkbox"> <input type="text"></li>
+          <li><input type="checkbox"> <input type="text"></li>
+          <li><input type="checkbox"> <input type="text"></li>
+          <li><input type="checkbox"> <input type="text"></li>
+          <li><input type="checkbox"> <input type="text"></li>
+          <li><input type="checkbox"> <input type="text"></li>
+        </ul>
+      </div>
+
+      <div class="notas">
+        <h3>Notas</h3>
+        <textarea id="notas" placeholder="Escribe aquí tus ideas o notas..."></textarea>
+      </div>
+
+      <button id="guardar-dia">💾 Guardar</button>
+      <button id="limpiar-dia">🗑 Limpiar todo</button>
+    </div>
+  </div>
+
+<h2>Sube hasta 5 imágenes</h2>
+<form>
+  <input type="file" name="archivo[]" id="archivo" accept="image/*" multiple required>
+  <div id="preview"></div>
+  <button id="borrar-imagenes" style="background-color:#d9534f; color:white; margin-top:10px;">🗑 Borrar Imágenes</button>
+</form>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const params = new URLSearchParams(window.location.search);
+    const fechaParam = params.get("fecha");
+
+    if (fechaParam) {
+      const [anio, mes, diaNum] = fechaParam.split("-");
+      const fecha = new Date(anio, mes - 1, diaNum);
+      const dia = diaNum.padStart(2, "0");
+      const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+      const nombreDia = diasSemana[fecha.getDay()];
+
+      document.getElementById("numero-dia").textContent = dia;
+      document.getElementById("nombre-dia").textContent = nombreDia;
+    }
+
+    const campos = ["urgente", "notas"];
+    campos.forEach(id => {
+      const el = document.getElementById(id);
+      const valor = localStorage.getItem(`${id}-${fechaParam}`);
+      if (valor) el.value = valor;
+      el.addEventListener("input", function () {
+        localStorage.setItem(`${id}-${fechaParam}`, this.value);
+      });
+    });
+
+    document.querySelectorAll("input[type='text']").forEach((input, i) => {
+      const valor = localStorage.getItem(`text-${i}-${fechaParam}`);
+      if (valor) input.value = valor;
+      input.addEventListener("input", function () {
+        localStorage.setItem(`text-${i}-${fechaParam}`, this.value);
+      });
+    });
+
+    document.getElementById("guardar-dia").addEventListener("click", function () {
+      alert("Cambios guardados localmente ✅");
+    });
+
+    document.getElementById("limpiar-dia").addEventListener("click", function () {
+      if (confirm("¿Estás seguro de que quieres borrar todo para este día?")) {
+        campos.forEach(id => localStorage.removeItem(`${id}-${fechaParam}`));
+        document.querySelectorAll("input[type='text']").forEach((input, i) => {
+          localStorage.removeItem(`text-${i}-${fechaParam}`);
+          input.value = "";
+        });
+        document.getElementById("urgente").value = "";
+        document.getElementById("notas").value = "";
+      }
+    });
+
+    document.getElementById('archivo').addEventListener('change', function () {
+      const preview = document.getElementById('preview');
+      preview.innerHTML = '';
+      const archivos = this.files;
+
+      if (archivos.length > 5) {
+        alert("Solo puedes subir hasta 5 imágenes.");
+        this.value = '';
+        return;
+      }
+
+      Array.from(archivos).forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+
+        const lector = new FileReader();
+        lector.onload = function (e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          preview.appendChild(img);
+        };
+        lector.readAsDataURL(file);
+      });
+    });
+
+    document.getElementById('borrar-imagenes').addEventListener('click', function () {
+      if (confirm("¿Deseas borrar todas las imágenes guardadas para este día?")) {
+        localStorage.removeItem(`imagenes-${fechaParam}`);
+        document.getElementById('preview').innerHTML = '';
+        document.getElementById('archivo').value = '';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
