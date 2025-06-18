@@ -165,99 +165,129 @@
 
       <button id="guardar-dia">💾 Guardar</button>
       <button id="limpiar-dia">🗑 Limpiar todo</button>
+      <button id="ver-reporte" style="background-color:#6c757d; color:white; margin-top:15px;">📄 Generar Reporte</button>
     </div>
   </div>
 
-<h2>Sube hasta 5 imágenes</h2>
-<form>
-  <input type="file" name="archivo[]" id="archivo" accept="image/*" multiple required>
-  <div id="preview"></div>
-  <button id="borrar-imagenes" style="background-color:#d9534f; color:white; margin-top:10px;">🗑 Borrar Imágenes</button>
-</form>
+  <div id="reporte-dia" style="display:none; background:white; padding:20px; margin-top:20px; border-radius:10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width:500px; margin-left:auto; margin-right:auto;">
+    <h2>Reporte del día <span id="fecha-reporte"></span></h2>
+    <p><strong>Urgente:</strong> <span id="urgente-reporte"></span></p>
+    <p><strong>Notas:</strong> <span id="notas-reporte"></span></p>
+    <h3>Prioridades y cosas por hacer:</h3>
+    <ul id="lista-reporte"></ul>
+  </div>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const params = new URLSearchParams(window.location.search);
-    const fechaParam = params.get("fecha");
+  <h2>Sube hasta 5 imágenes</h2>
+  <form>
+    <input type="file" name="archivo[]" id="archivo" accept="image/*" multiple required>
+    <div id="preview"></div>
+    <button id="borrar-imagenes" style="background-color:#d9534f; color:white; margin-top:10px;">🗑 Borrar Imágenes</button>
+  </form>
 
-    if (fechaParam) {
-      const [anio, mes, diaNum] = fechaParam.split("-");
-      const fecha = new Date(anio, mes - 1, diaNum);
-      const dia = diaNum.padStart(2, "0");
-      const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-      const nombreDia = diasSemana[fecha.getDay()];
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const params = new URLSearchParams(window.location.search);
+      const fechaParam = params.get("fecha");
 
-      document.getElementById("numero-dia").textContent = dia;
-      document.getElementById("nombre-dia").textContent = nombreDia;
-    }
+      if (fechaParam) {
+        const [anio, mes, diaNum] = fechaParam.split("-");
+        const fecha = new Date(anio, mes - 1, diaNum);
+        const dia = diaNum.padStart(2, "0");
+        const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+        const nombreDia = diasSemana[fecha.getDay()];
 
-    const campos = ["urgente", "notas"];
-    campos.forEach(id => {
-      const el = document.getElementById(id);
-      const valor = localStorage.getItem(`${id}-${fechaParam}`);
-      if (valor) el.value = valor;
-      el.addEventListener("input", function () {
-        localStorage.setItem(`${id}-${fechaParam}`, this.value);
-      });
-    });
+        document.getElementById("numero-dia").textContent = dia;
+        document.getElementById("nombre-dia").textContent = nombreDia;
+      }
 
-    document.querySelectorAll("input[type='text']").forEach((input, i) => {
-      const valor = localStorage.getItem(`text-${i}-${fechaParam}`);
-      if (valor) input.value = valor;
-      input.addEventListener("input", function () {
-        localStorage.setItem(`text-${i}-${fechaParam}`, this.value);
-      });
-    });
-
-    document.getElementById("guardar-dia").addEventListener("click", function () {
-      alert("Cambios guardados localmente ✅");
-    });
-
-    document.getElementById("limpiar-dia").addEventListener("click", function () {
-      if (confirm("¿Estás seguro de que quieres borrar todo para este día?")) {
-        campos.forEach(id => localStorage.removeItem(`${id}-${fechaParam}`));
-        document.querySelectorAll("input[type='text']").forEach((input, i) => {
-          localStorage.removeItem(`text-${i}-${fechaParam}`);
-          input.value = "";
+      const campos = ["urgente", "notas"];
+      campos.forEach(id => {
+        const el = document.getElementById(id);
+        const valor = localStorage.getItem(`${id}-${fechaParam}`);
+        if (valor) el.value = valor;
+        el.addEventListener("input", function () {
+          localStorage.setItem(`${id}-${fechaParam}`, this.value);
         });
-        document.getElementById("urgente").value = "";
-        document.getElementById("notas").value = "";
-      }
-    });
+      });
 
-    document.getElementById('archivo').addEventListener('change', function () {
-      const preview = document.getElementById('preview');
-      preview.innerHTML = '';
-      const archivos = this.files;
+      document.querySelectorAll("input[type='text']").forEach((input, i) => {
+        const valor = localStorage.getItem(`text-${i}-${fechaParam}`);
+        if (valor) input.value = valor;
+        input.addEventListener("input", function () {
+          localStorage.setItem(`text-${i}-${fechaParam}`, this.value);
+        });
+      });
 
-      if (archivos.length > 5) {
-        alert("Solo puedes subir hasta 5 imágenes.");
-        this.value = '';
-        return;
-      }
+      document.getElementById("guardar-dia").addEventListener("click", function () {
+        alert("Cambios guardados localmente ✅");
+      });
 
-      Array.from(archivos).forEach(file => {
-        if (!file.type.startsWith('image/')) return;
+      document.getElementById("limpiar-dia").addEventListener("click", function () {
+        if (confirm("¿Estás seguro de que quieres borrar todo para este día?")) {
+          campos.forEach(id => localStorage.removeItem(`${id}-${fechaParam}`));
+          document.querySelectorAll("input[type='text']").forEach((input, i) => {
+            localStorage.removeItem(`text-${i}-${fechaParam}`);
+            input.value = "";
+          });
+          document.getElementById("urgente").value = "";
+          document.getElementById("notas").value = "";
+        }
+      });
 
-        const lector = new FileReader();
-        lector.onload = function (e) {
-          const img = document.createElement('img');
-          img.src = e.target.result;
-          preview.appendChild(img);
-        };
-        lector.readAsDataURL(file);
+      document.getElementById('archivo').addEventListener('change', function () {
+        const preview = document.getElementById('preview');
+        preview.innerHTML = '';
+        const archivos = this.files;
+
+        if (archivos.length > 5) {
+          alert("Solo puedes subir hasta 5 imágenes.");
+          this.value = '';
+          return;
+        }
+
+        Array.from(archivos).forEach(file => {
+          if (!file.type.startsWith('image/')) return;
+
+          const lector = new FileReader();
+          lector.onload = function (e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            preview.appendChild(img);
+          };
+          lector.readAsDataURL(file);
+        });
+      });
+
+      document.getElementById('borrar-imagenes').addEventListener('click', function () {
+        if (confirm("¿Deseas borrar todas las imágenes guardadas para este día?")) {
+          localStorage.removeItem(`imagenes-${fechaParam}`);
+          document.getElementById('preview').innerHTML = '';
+          document.getElementById('archivo').value = '';
+        }
+      });
+
+      document.getElementById("ver-reporte").addEventListener("click", function () {
+        const fechaParam = new URLSearchParams(window.location.search).get("fecha") || "sin-fecha";
+
+        document.getElementById("fecha-reporte").textContent = fechaParam;
+        document.getElementById("urgente-reporte").textContent = localStorage.getItem(`urgente-${fechaParam}`) || "Sin datos";
+        document.getElementById("notas-reporte").textContent = localStorage.getItem(`notas-${fechaParam}`) || "Sin datos";
+
+        const ul = document.getElementById("lista-reporte");
+        ul.innerHTML = "";
+
+        document.querySelectorAll("input[type='text']").forEach((input, i) => {
+          const texto = localStorage.getItem(`text-${i}-${fechaParam}`);
+          if (texto) {
+            const li = document.createElement("li");
+            li.textContent = texto;
+            ul.appendChild(li);
+          }
+        });
+
+        document.getElementById("reporte-dia").style.display = "block";
       });
     });
-
-    document.getElementById('borrar-imagenes').addEventListener('click', function () {
-      if (confirm("¿Deseas borrar todas las imágenes guardadas para este día?")) {
-        localStorage.removeItem(`imagenes-${fechaParam}`);
-        document.getElementById('preview').innerHTML = '';
-        document.getElementById('archivo').value = '';
-      }
-    });
-  });
-</script>
-
+  </script>
 </body>
 </html>
