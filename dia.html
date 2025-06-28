@@ -6,16 +6,19 @@
   <title>Vista diaria</title>
   <link rel="stylesheet" href="css/estilos.css">
   <script defer src="js/cargar-dia.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
+    
     body {
-      font-family: sans-serif;
+     font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 20px;
-      background: #f5f7fa;
+      background: url('img/fulanito.jpg') no-repeat center center fixed;
+      background-size: cover;
     }
 
     .day-header {
-      background-color: #007bff;
+      background-color: #ff9102;
       color: white;
       border-radius: 10px;
       padding: 20px;
@@ -42,73 +45,99 @@
       color: #34495e;
     }
 
-    .prioridades ul,
-    .cosas-por-hacer ul,
-    .agradezco ul {
+    .columna-centro {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    ul {
+      list-style: none;
       padding-left: 0;
     }
 
-    .prioridades li,
-    .cosas-por-hacer li,
-    .agradezco li {
+    li {
       display: flex;
-      gap: 5px;
-      margin-bottom: 5px;
-    }
-
-    input[type="text"] {
-      flex: 1;
-      border: none;
-      border-bottom: 1px solid #ccc;
-      background: transparent;
-    }
-
-    textarea {
-      width: 100%;
-      padding: 8px;
-      resize: vertical;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    .notas textarea {
-      height: 200px;
+      align-items: center;
+      margin-bottom: 8px;
     }
 
     button {
-      margin-top: 10px;
-      padding: 6px 12px;
-      background-color: #e74c3c;
-      color: white;
+      margin: 10px 5px 0 0;
+      padding: 8px 16px;
+      font-weight: bold;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+    }
+
+    #guardar-dia {
+      background-color: #28a745;
+      color: white;
+    }
+
+    #limpiar-dia {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    #ver-reporte {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    #descargar-pdf {
+      background-color: #218838;
+      color: white;
+    }
+
+    #descargar-csv {
+      background-color: #17a2b8;
+      color: white;
+    }
+
+    #reporte-dia {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #reporte-dia h2 {
+      margin-top: 0;
+    }
+
+    #lista-reporte li {
+      margin-bottom: 5px;
     }
 
     form {
       background: white;
       padding: 20px;
       border-radius: 10px;
-      max-width: 500px;
-      margin: auto;
+      max-width: 600px;
+      margin: 20px auto;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    input[type="file"] {
-      margin: 10px 0;
-    }
-
-    input[type="submit"] {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    input[type="submit"]:hover {
-      background-color: #45a049;
     }
 
     #preview img {
@@ -120,8 +149,8 @@
   </style>
 </head>
 <body>
+  
   <a href="calendario.html" class="volver-calendario">← Calendario</a>
-
   <div class="day-header">
     <h1><span id="numero-dia">--</span></h1>
     <p id="nombre-dia">Día</p>
@@ -129,11 +158,13 @@
 
   <div class="vista-dia">
     <div class="columna-centro">
+      <!-- Urgente -->
       <div class="urgente">
         <label for="urgente"><strong>URGENTE</strong></label>
         <textarea id="urgente" rows="2" placeholder="Escribe aquí..."></textarea>
       </div>
 
+      <!-- Prioridades -->
       <div class="prioridades">
         <h3>PRIORIDADES</h3>
         <ul>
@@ -145,6 +176,7 @@
         </ul>
       </div>
 
+      <!-- Cosas por hacer -->
       <div class="cosas-por-hacer">
         <h3>COSAS POR HACER</h3>
         <ul>
@@ -158,17 +190,22 @@
         </ul>
       </div>
 
+      <!-- Notas -->
       <div class="notas">
         <h3>Notas</h3>
         <textarea id="notas" placeholder="Escribe aquí tus ideas o notas..."></textarea>
       </div>
 
+      <!-- Botones -->
       <button id="guardar-dia">💾 Guardar</button>
       <button id="limpiar-dia">🗑 Limpiar todo</button>
       <button id="ver-reporte" style="background-color:#6c757d; color:white; margin-top:15px;">📄 Generar Reporte</button>
+      <button id="descargar-pdf" style="background-color:#28a745; color:white; margin-top:15px;">⬇ Descargar PDF</button>
+      <button id="descargar-csv" style="background-color:#17a2b8; color:white; margin-top:15px;">⬇ Descargar Excel/CSV</button>
     </div>
   </div>
 
+  <!-- Reporte -->
   <div id="reporte-dia" style="display:none; background:white; padding:20px; margin-top:20px; border-radius:10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width:500px; margin-left:auto; margin-right:auto;">
     <h2>Reporte del día <span id="fecha-reporte"></span></h2>
     <p><strong>Urgente:</strong> <span id="urgente-reporte"></span></p>
@@ -177,105 +214,53 @@
     <ul id="lista-reporte"></ul>
   </div>
 
-  <h2>Sube hasta 5 imágenes</h2>
-  <form>
-    <input type="file" name="archivo[]" id="archivo" accept="image/*" multiple required>
-    <div id="preview"></div>
-    <button id="borrar-imagenes" style="background-color:#d9534f; color:white; margin-top:10px;">🗑 Borrar Imágenes</button>
-  </form>
-
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const params = new URLSearchParams(window.location.search);
-      const fechaParam = params.get("fecha");
+      const fechaParam = params.get("fecha") || "sin-fecha";
 
-      if (fechaParam) {
+      // Mostrar día
+      if (fechaParam !== "sin-fecha") {
         const [anio, mes, diaNum] = fechaParam.split("-");
         const fecha = new Date(anio, mes - 1, diaNum);
-        const dia = diaNum.padStart(2, "0");
         const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-        const nombreDia = diasSemana[fecha.getDay()];
-
-        document.getElementById("numero-dia").textContent = dia;
-        document.getElementById("nombre-dia").textContent = nombreDia;
+        document.getElementById("numero-dia").textContent = diaNum.padStart(2, "0");
+        document.getElementById("nombre-dia").textContent = diasSemana[fecha.getDay()];
       }
 
-      const campos = ["urgente", "notas"];
-      campos.forEach(id => {
+      // Guardar contenido
+      ["urgente", "notas"].forEach(id => {
         const el = document.getElementById(id);
-        const valor = localStorage.getItem(`${id}-${fechaParam}`);
-        if (valor) el.value = valor;
-        el.addEventListener("input", function () {
-          localStorage.setItem(`${id}-${fechaParam}`, this.value);
-        });
+        el.value = localStorage.getItem(`${id}-${fechaParam}`) || "";
+        el.addEventListener("input", () => localStorage.setItem(`${id}-${fechaParam}`, el.value));
       });
 
       document.querySelectorAll("input[type='text']").forEach((input, i) => {
-        const valor = localStorage.getItem(`text-${i}-${fechaParam}`);
-        if (valor) input.value = valor;
-        input.addEventListener("input", function () {
-          localStorage.setItem(`text-${i}-${fechaParam}`, this.value);
-        });
+        input.value = localStorage.getItem(`text-${i}-${fechaParam}`) || "";
+        input.addEventListener("input", () => localStorage.setItem(`text-${i}-${fechaParam}`, input.value));
       });
 
-      document.getElementById("guardar-dia").addEventListener("click", function () {
+      document.getElementById("guardar-dia").addEventListener("click", () => {
         alert("Cambios guardados localmente ✅");
       });
 
-      document.getElementById("limpiar-dia").addEventListener("click", function () {
-        if (confirm("¿Estás seguro de que quieres borrar todo para este día?")) {
-          campos.forEach(id => localStorage.removeItem(`${id}-${fechaParam}`));
+      document.getElementById("limpiar-dia").addEventListener("click", () => {
+        if (confirm("¿Borrar todo para este día?")) {
+          ["urgente", "notas"].forEach(id => localStorage.removeItem(`${id}-${fechaParam}`));
           document.querySelectorAll("input[type='text']").forEach((input, i) => {
             localStorage.removeItem(`text-${i}-${fechaParam}`);
             input.value = "";
           });
-          document.getElementById("urgente").value = "";
-          document.getElementById("notas").value = "";
         }
       });
 
-      document.getElementById('archivo').addEventListener('change', function () {
-        const preview = document.getElementById('preview');
-        preview.innerHTML = '';
-        const archivos = this.files;
-
-        if (archivos.length > 5) {
-          alert("Solo puedes subir hasta 5 imágenes.");
-          this.value = '';
-          return;
-        }
-
-        Array.from(archivos).forEach(file => {
-          if (!file.type.startsWith('image/')) return;
-
-          const lector = new FileReader();
-          lector.onload = function (e) {
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            preview.appendChild(img);
-          };
-          lector.readAsDataURL(file);
-        });
-      });
-
-      document.getElementById('borrar-imagenes').addEventListener('click', function () {
-        if (confirm("¿Deseas borrar todas las imágenes guardadas para este día?")) {
-          localStorage.removeItem(`imagenes-${fechaParam}`);
-          document.getElementById('preview').innerHTML = '';
-          document.getElementById('archivo').value = '';
-        }
-      });
-
-      document.getElementById("ver-reporte").addEventListener("click", function () {
-        const fechaParam = new URLSearchParams(window.location.search).get("fecha") || "sin-fecha";
-
+      document.getElementById("ver-reporte").addEventListener("click", () => {
         document.getElementById("fecha-reporte").textContent = fechaParam;
         document.getElementById("urgente-reporte").textContent = localStorage.getItem(`urgente-${fechaParam}`) || "Sin datos";
         document.getElementById("notas-reporte").textContent = localStorage.getItem(`notas-${fechaParam}`) || "Sin datos";
 
         const ul = document.getElementById("lista-reporte");
         ul.innerHTML = "";
-
         document.querySelectorAll("input[type='text']").forEach((input, i) => {
           const texto = localStorage.getItem(`text-${i}-${fechaParam}`);
           if (texto) {
@@ -284,10 +269,122 @@
             ul.appendChild(li);
           }
         });
-
         document.getElementById("reporte-dia").style.display = "block";
       });
+
+      document.getElementById("descargar-pdf").addEventListener("click", () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const fecha = document.getElementById("fecha-reporte").textContent;
+        const urgente = document.getElementById("urgente-reporte").textContent;
+        const notas = document.getElementById("notas-reporte").textContent;
+        const tareas = Array.from(document.querySelectorAll("#lista-reporte li")).map(li => li.textContent);
+
+        doc.text("Reporte del día: " + fecha, 10, 10);
+        doc.text("Urgente: " + urgente, 10, 20);
+        doc.text("Notas: " + notas, 10, 30);
+        let y = 40;
+        tareas.forEach(t => {
+          doc.text("- " + t, 10, y);
+          y += 10;
+        });
+
+        doc.save(`reporte_${fecha}.pdf`);
+      });
+
+      document.getElementById("descargar-csv").addEventListener("click", () => {
+        const fecha = document.getElementById("fecha-reporte").textContent;
+        const urgente = document.getElementById("urgente-reporte").textContent;
+        const notas = document.getElementById("notas-reporte").textContent;
+        const tareas = Array.from(document.querySelectorAll("#lista-reporte li")).map(li => li.textContent);
+
+        let csv = "Sección,Contenido\n";
+        csv += `Fecha,${fecha}\n`;
+        csv += `Urgente,${urgente}\n`;
+        csv += `Notas,${notas}\n`;
+        tareas.forEach(t => {
+          csv += `Tarea,${t}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `reporte_${fecha}.csv`;
+        link.click();
+      });
     });
+
   </script>
+  <!-- Subida de imágenes -->
+<div class="columna-centro">
+  <h3>📸 Agrega imágenes del día</h3>
+  <input type="file" id="archivo" accept="image/*" multiple>
+  <div id="preview" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;"></div>
+  <button id="borrar-imagenes" style="background:#ffc107; color:black;">🗑 Borrar Imágenes</button>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const fechaParam = new URLSearchParams(window.location.search).get("fecha") || "sin-fecha";
+    const archivoInput = document.getElementById("archivo");
+    const preview = document.getElementById("preview");
+
+    const imagenesGuardadas = JSON.parse(localStorage.getItem(`imagenes-${fechaParam}`) || '[]');
+    imagenesGuardadas.forEach(src => agregarPreview(src));
+
+    archivoInput.addEventListener('change', function () {
+      preview.innerHTML = '';
+      const archivos = Array.from(this.files);
+      if (archivos.length > 5) {
+        alert("Solo puedes subir hasta 5 imágenes.");
+        this.value = '';
+        return;
+      }
+      const imagenes = [];
+      archivos.forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const src = e.target.result;
+          agregarPreview(src);
+          imagenes.push(src);
+          localStorage.setItem(`imagenes-${fechaParam}`, JSON.stringify(imagenes));
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    function agregarPreview(src) {
+      const img = document.createElement('img');
+      img.src = src;
+      img.style.width = '100px';
+      img.style.borderRadius = '5px';
+      preview.appendChild(img);
+    }
+
+    document.getElementById("borrar-imagenes").addEventListener("click", function () {
+      if (confirm("¿Deseas borrar todas las imágenes guardadas para este día?")) {
+        localStorage.removeItem(`imagenes-${fechaParam}`);
+        preview.innerHTML = '';
+        archivoInput.value = '';
+      }
+    });
+
+    const verReporte = document.getElementById("ver-reporte");
+    verReporte.addEventListener("click", function () {
+      const contenedor = document.getElementById("reporte-dia");
+      const imagenes = JSON.parse(localStorage.getItem(`imagenes-${fechaParam}`) || '[]');
+      let imagenesHtml = "";
+      imagenes.forEach(src => {
+        imagenesHtml += `<img src="${src}" style="width:100px; margin:5px; border-radius:5px;">`;
+      });
+      if (imagenesHtml) {
+        const div = document.createElement("div");
+        div.innerHTML = `<h3>Imágenes guardadas:</h3>${imagenesHtml}`;
+        contenedor.appendChild(div);
+      }
+    });
+  });
+</script>
 </body>
 </html>
