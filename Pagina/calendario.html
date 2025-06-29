@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calendario Anual 2025</title>
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #f8f9fa, #e9ecef);
+    color: #343a40;
+    text-align: center;
+  }
+
+  h1 {
+    margin: 30px 0 10px;
+    font-size: 2.5em;
+    color: #007bff;
+  }
+
+  .calendar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .month {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 15px;
+    width: 220px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+  }
+
+  .month:hover {
+    transform: translateY(-5px);
+  }
+
+  .month h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #495057;
+    font-size: 1.3em;
+  }
+
+  .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    text-align: center;
+  }
+
+  .day-name {
+    font-weight: bold;
+    background-color: #dee2e6;
+    padding: 5px 0;
+    border-radius: 6px;
+    font-size: 0.85em;
+    color: #212529;
+  }
+
+  .days a {
+    display: inline-block;
+    padding: 7px 0;
+    background-color: #f1f3f5;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #343a40;
+    font-size: 0.9em;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .days a:hover {
+    background-color: #74c0fc;
+    color: white;
+  }
+
+  .empty {
+    visibility: hidden;
+    display: inline-block;
+    padding: 7px 0;
+  }
+
+  /* Colores personalizados SEP */
+  .inicio { background-color: #28a745 !important; color: white !important; } /* verde */
+  .fin { background-color: #dc3545 !important; color: white !important; } /* rojo */
+  /*receso eliminado*/
+  .consejo { background-color: #f8d7da !important; color: #721c24 !important; } /* rosa claro */
+  .vacaciones { background-color: #6c757d !important; color: white !important; } /* gris */
+  .entrega { background-color: #17a2b8 !important; color: white !important; } /* azul claro */
+  
+  .suspension { background-color: #ff69b4 !important; color: white !important; } /* rosa fuerte */
+  </style>
+</head>
+<body>
+  <h1>Calendario Anual 2025-2026</h1>
+    <div style="margin-bottom: 20px;">
+    <strong>Guía de colores:</strong>
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 8px; font-size: 0.9em;">
+      <span style="background-color: #28a745; color: white; padding: 4px 8px; border-radius: 6px;">Inicio de clases</span>
+      <span style="background-color: #dc3545; color: white; padding: 4px 8px; border-radius: 6px;">Fin de clases</span>
+      <span style="background-color: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 6px;">Consejo Técnico</span>
+      <span style="background-color: #6c757d; color: white; padding: 4px 8px; border-radius: 6px;">Vacaciones</span>
+      <span style="background-color: #17a2b8; color: white; padding: 4px 8px; border-radius: 6px;">Entrega de boletas</span>
+      <span style="background-color: #ff69b4; color: white; padding: 4px 8px; border-radius: 6px;">Suspensión</span>
+    </div>
+  </div>
+
+  <div class="calendar">
+<script>
+const calendarDiv = document.querySelector('.calendar');
+const meses = [
+  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+];
+const diasSemana = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+
+// Fechas especiales según el calendario SEP 2024–2025 (formato YYYY-MM-DD)
+const fechasEspeciales = {
+  "inicio": ["2025-01-02", "2025-01-03"],
+  "fin": ["2025-07-16"],
+  
+  "consejo": ["2025-01-31", "2025-02-28", "2025-03-28", "2025-05-30", "2025-06-27"],
+  "vacaciones": [ "2025-04-14", "2025-04-15", "2025-04-16", "2025-04-17", "2025-04-18", "2025-04-21", "2025-04-22", "2025-04-23", "2025-04-24", "2025-04-25"],
+  "entrega": ["2025-01-07", "2025-01-08", "2025-02-10", "2025-02-11", "2025-02-12", "2025-02-13", "2025-02-14", "2025-02-17", "2025-02-18", "2025-02-19", "2025-02-20", "2025-02-21", "2025-02-24", "2025-02-25", "2025-02-26", "2025-02-27"],
+  
+  "suspension": ["2024-09-16", "2024-11-18", "2025-02-03", "2025-03-17", "2025-05-01", "2025-05-05", "2025-05-15"]
+};
+
+function generarCalendario(anio) {
+  for (let mes = 0; mes < 12; mes++) {
+    const primerDia = new Date(anio, mes, 1).getDay();
+    const diasEnMes = new Date(anio, mes + 1, 0).getDate();
+
+    const mesDiv = document.createElement('div');
+    mesDiv.classList.add('month');
+
+    const titulo = document.createElement('h2');
+    titulo.textContent = meses[mes];
+    mesDiv.appendChild(titulo);
+
+    const diasDiv = document.createElement('div');
+    diasDiv.classList.add('days');
+    diasSemana.forEach(dia => {
+      const diaSpan = document.createElement('span');
+      diaSpan.classList.add('day-name');
+      diaSpan.textContent = dia;
+      diasDiv.appendChild(diaSpan);
+    });
+
+    for (let i = 0; i < primerDia; i++) {
+      const espacio = document.createElement('span');
+      espacio.classList.add('empty');
+      espacio.textContent = '';
+      diasDiv.appendChild(espacio);
+    }
+
+    for (let dia = 1; dia <= diasEnMes; dia++) {
+      const fecha = `${anio}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+      const enlace = document.createElement('a');
+      enlace.href = `dia.html?fecha=${fecha}`;
+      enlace.textContent = dia;
+
+      // Asignar clase de color si la fecha está en alguna categoría
+      for (const [clase, fechas] of Object.entries(fechasEspeciales)) {
+        if (fechas.includes(fecha)) {
+          enlace.classList.add(clase);
+        }
+      }
+
+      diasDiv.appendChild(enlace);
+    }
+
+    mesDiv.appendChild(diasDiv);
+    calendarDiv.appendChild(mesDiv);
+  }
+}
+
+generarCalendario(2025);
+</script>
+  </div>
+</body>
+</html>
