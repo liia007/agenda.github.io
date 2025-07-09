@@ -19,12 +19,12 @@
     .day-header {
       background-color: #ff9102;
       color: white;
-      border-radius: 10px;
+      border-radius: 40px;
       padding: 20px;
       text-align: center;
       width: 100%;
       max-width: 400px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 7px 90px rgba(0,0,0,0.1);
       margin: 0 auto 20px;
     }
 
@@ -45,17 +45,17 @@
     }
 
     .columna-centro {
-      max-width: 600px;
-      margin: auto;
+      max-width: 1000px;
       background: white;
-      padding: 20px;
-      border-radius: 10px;
+      padding: 30px;
+      border-radius: 20px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin: 0 auto 20px;
     }
 
     textarea, input[type="text"] {
       width: 100%;
-      padding: 8px;
+      padding: 20px;
       margin-bottom: 10px;
       border: 1px solid #ccc;
       border-radius: 4px;
@@ -78,37 +78,42 @@
     }
 
     button {
-      margin: 10px 5px 0 0;
-      padding: 8px 16px;
+      margin: 20px 5px 0 0;
+      padding: 30px 26px;
       font-weight: bold;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       cursor: pointer;
     }
 
     #guardar-dia {
       background-color: #28a745;
       color: white;
+      font-size: 16px;
     }
 
     #limpiar-dia {
       background-color: #dc3545;
       color: white;
+      font-size: 16px;
     }
 
     #ver-reporte {
       background-color: #6c757d;
       color: white;
+      font-size: 16px;
     }
 
     #descargar-pdf {
       background-color: #218838;
       color: white;
+      font-size: 16px;
     }
 
     #descargar-csv {
       background-color: #17a2b8;
       color: white;
+      font-size: 16px;
     }
 
     #reporte-dia {
@@ -120,6 +125,7 @@
       max-width: 600px;
       margin-left: auto;
       margin-right: auto;
+      font-size: 16px;
     }
 
     #reporte-dia h2 {
@@ -159,30 +165,11 @@
 
   <div class="vista-dia">
     <div class="columna-centro">
-      <!-- Urgente -->
-      <div class="urgente">
-        <label for="urgente"><strong>URGENTE</strong></label>
-        <textarea id="urgente" rows="2" placeholder="Escribe aquí..."></textarea>
-      </div>
 
       <!-- Prioridades -->
       <div class="prioridades">
         <h3>PRIORIDADES</h3>
         <ul>
-          <li><input type="checkbox"> <input type="text"></li>
-          <li><input type="checkbox"> <input type="text"></li>
-          <li><input type="checkbox"> <input type="text"></li>
-          <li><input type="checkbox"> <input type="text"></li>
-          <li><input type="checkbox"> <input type="text"></li>
-        </ul>
-      </div>
-
-      <!-- Cosas por hacer -->
-      <div class="cosas-por-hacer">
-        <h3>COSAS POR HACER</h3>
-        <ul>
-          <li><input type="checkbox"> <input type="text"></li>
-          <li><input type="checkbox"> <input type="text"></li>
           <li><input type="checkbox"> <input type="text"></li>
           <li><input type="checkbox"> <input type="text"></li>
           <li><input type="checkbox"> <input type="text"></li>
